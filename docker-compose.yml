@@ -1,0 +1,51 @@
+---
+version: "3"
+services:
+  database:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=bugtracker
+      - MYSQL_USER=mantisbt
+      - MYSQL_PASSWORD=mantisbt
+    restart: always
+    networks:
+      - mantis_net
+  nginx:
+    image: mantis-nginx
+    restart: always
+    ports:
+      - "12380:80"
+    links:
+      - "fpm"
+    depends_on:
+      - fpm
+    networks:
+      - mantis_net
+
+  fpm:
+    image: mantis-phpfpm
+    restart: always
+    expose:
+      - 9000
+    links:
+      - "database"
+    depends_on:
+      - database
+    networks:
+      - mantis_net
+    environment:
+      - LDAP_HOST=ldap.kapable.info
+      - LDAP_BASE_DN=ou=Users,dc=kapable,dc=info
+      - LDAP_PORT=10389
+      - LDAP_BIND_DN=cn=consult,dc=kapable,dc=info
+      - LDAP_BIND_PW=6171cd58f2083f3d2708
+      - MYSQL_DATABASE=bugtracker
+      - MYSQL_USER=mantisbt
+      - MYSQL_PASSWORD=mantisbt
+networks:
+  mantis_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.101.0/24

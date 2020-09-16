@@ -1,0 +1,22 @@
+from php:7-fpm
+
+ADD mantisbt-2.24.2.tar.gz /var/www/
+RUN rm -rf /var/www/html && \
+    mv /var/www/mantisbt* /var/www/html && \
+    chown -R www-data:www-data /var/www/html
+
+RUN \
+    apt-get update && \
+    apt-get install libldap2-dev -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ && \
+    docker-php-ext-install ldap && \
+    docker-php-ext-install mysqli && \
+    docker-php-ext-enable mysqli
+
+ADD config_inc.php /var/www/html/config/
+RUN chown -R www-data:www-data /var/www/html
+
+ADD fpm-entrypoint.sh /fpm-entrypoint.sh
+
+CMD ["/fpm-entrypoint.sh"]
