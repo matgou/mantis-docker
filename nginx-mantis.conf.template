@@ -39,7 +39,7 @@ server {
         # location ~ /\. { access_log off; log_not_found off; deny all; }
 
         location ~ \.php$ {
-         fastcgi_pass   fpm:9000;
+         fastcgi_pass   ${FPM_HOST};
          include        fastcgi_params;
          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         }
