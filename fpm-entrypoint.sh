@@ -30,4 +30,4 @@ sed -i "s/@@LDAP_PORT@@/$LDAP_PORT/g" $fic
 
 #php /t.php > /var/www/html/plugins/Ldap_Login/data.dat
 
-php-fpm
+apache2-foreground

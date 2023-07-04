@@ -1,9 +1,4 @@
-from php:7-fpm
-
-ADD mantisbt-2.24.2.tar.gz /var/www/
-RUN rm -rf /var/www/html && \
-    mv /var/www/mantisbt* /var/www/html && \
-    chown -R www-data:www-data /var/www/html
+from php:7-apache
 
 RUN \
     apt-get update && \
@@ -14,8 +9,13 @@ RUN \
     docker-php-ext-install mysqli && \
     docker-php-ext-enable mysqli
 
+WORKDIR /var/www/html/
+USER www-data
+RUN curl -L -O https://downloads.sourceforge.net/project/mantisbt/mantis-stable/2.25.7/mantisbt-2.25.7.tar.gz && \ 
+    tar xvf mantisbt*tar.gz && \
+    mv -v mantisbt*/* ./
+
 ADD config_inc.php /var/www/html/config/
-RUN chown -R www-data:www-data /var/www/html
 
 ADD fpm-entrypoint.sh /fpm-entrypoint.sh
 
